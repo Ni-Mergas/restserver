@@ -1,7 +1,16 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
 
-const { validarCampos } = require("../middlewares/validar-campos");
+// const { validarCampos } = require("../middlewares/validar-campos");
+// const { ValidarJWT } = require("../middlewares/validar-jwt");
+// const { esAdminRole, tieneRole } = require("../middlewares/validar-roles");
+const {
+  validarCampos,
+  validarJWT,
+  esAdminRole,
+  tieneRole
+} = require('../middlewares/index');
+
 const {
   esRoleValido,
   emailExiste,
@@ -46,6 +55,9 @@ router.post(
 
 router.delete(
   "/:id",
+  validarJWT, //Con la función next, permite validar en orden, por esa razon el token debe ir de primero.
+  // esAdminRole, //Este middleware, obliga a que si o si el usuario sea administrador.
+  tieneRole('ADMIN_ROLE', 'VENTAS_ROLE'),
   check("id", "No es ID válido").isMongoId(),
   check("id").custom(existeUsuarioPorId),
   validarCampos,
